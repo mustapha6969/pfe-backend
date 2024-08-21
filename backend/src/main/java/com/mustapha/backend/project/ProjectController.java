@@ -20,10 +20,16 @@ public class ProjectController {
     }
 
     @PostMapping
-    public ResponseEntity<Project> createProject(@RequestParam String name,@RequestParam String description, @RequestParam String consultant) {
-        Project createdProject = projectService.createProject(name,description,consultant);
+    public ResponseEntity<Project> createProject(@RequestBody ProjectRequest projectRequest) {
+        Project createdProject = projectService.createProject(
+                projectRequest.getName(),
+                projectRequest.getDescription(),
+                projectRequest.getUserIds()
+        );
         return new ResponseEntity<>(createdProject, HttpStatus.CREATED);
     }
+
+
 
     @GetMapping("/{id}")
     public ResponseEntity<Project> getProjectById(@PathVariable Integer id) {

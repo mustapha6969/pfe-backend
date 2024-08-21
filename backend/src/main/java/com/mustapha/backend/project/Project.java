@@ -8,8 +8,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
-import org.springframework.lang.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -31,15 +31,23 @@ public class Project {
     @Column(length = 500)
     private String description;
 
-    @ManyToMany
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JsonIgnore
     @JoinTable(
-            name = "project_developers",
+            name = "project_users",
             joinColumns = @JoinColumn(name = "project_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id")
     )
-    private List<User> developers;
+    private List<User> developers = new ArrayList<>();
 
-    @Nullable
-    private Integer securityConsultant_id;
+    // Helper method to manage the bidirectional relationship
+    public void addDeveloper(User user) {
+        developers.add(user);
+        user.getProjects().add(this);
+    }
+
+    public void removeDeveloper(User user) {
+        developers.remove(user);
+        user.getProjects().remove(this);
+    }
 }

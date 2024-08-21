@@ -21,14 +21,29 @@ public class ProjectServiceImpl implements IProjectService {
     }
 
     @Override
-    public Project createProject(String name,String description,String consultant) {
-        User user = userRepository.findByFirstname(consultant);
+    public Project createProject(String name, String description, List<Integer> user_ids) {
+        // Find all users by their IDs
+        List<User> users = userRepository.findAllById(user_ids);
+
+        if (users.isEmpty()) {
+            throw new RuntimeException("No users found with the provided IDs");
+        }
+
+        // Create a new project and set its properties
         Project project = new Project();
         project.setName(name);
         project.setDescription(description);
-        project.setSecurityConsultant_id(user.getId());
+
+        // Add each user to the project, which also adds the project to the user's list
+        for (User user : users) {
+            project.addDeveloper(user);
+        }
+
+        // Save and return the project
         return projectRepository.save(project);
     }
+
+
 
     @Override
     public Optional<Project> getProjectById(Integer id) {
@@ -46,7 +61,6 @@ public class ProjectServiceImpl implements IProjectService {
             project.setName(updatedProject.getName());
             project.setDescription(updatedProject.getDescription());
             project.setDevelopers(updatedProject.getDevelopers());
-            project.setSecurityConsultant_id(updatedProject.getSecurityConsultant_id());
             return projectRepository.save(project);
         }).orElseThrow(() -> new RuntimeException("Project not found with id " + id));
     }

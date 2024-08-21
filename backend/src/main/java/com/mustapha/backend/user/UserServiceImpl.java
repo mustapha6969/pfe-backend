@@ -80,28 +80,18 @@ public class UserServiceImpl implements IUserService {
     public void deleteUser(Integer id) {
         User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found with id " + id));
 
-        // Remove the user from all projects where they are a developer
         List<Project> projectsAsDeveloper = user.getProjects();
         for (Project project : projectsAsDeveloper) {
             project.getDevelopers().remove(user);
             projectRepository.save(project);
         }
 
-        // Nullify the security consultant in all projects where the user is the consultant
-        List<Project> projectsAsConsultant = projectRepository.findProjectsBySecurityConsultant_id(id);
-        for (Project project : projectsAsConsultant) {
-            project.setSecurityConsultant_id(null);
-            projectRepository.save(project);
-        }
-
-        // Remove the user from all forms where they are the developer
         List<Form> forms = formRepository.findByDeveloper(user);
         for (Form form : forms) {
             form.setDeveloper(null);
             formRepository.save(form);
         }
 
-        // Remove the user from all reports where they are the consultant
         List<Repport> reports = repportRepository.findBySecurityConsultant(user);
         for (Repport report : reports) {
             report.setSecurityConsultant(null);
