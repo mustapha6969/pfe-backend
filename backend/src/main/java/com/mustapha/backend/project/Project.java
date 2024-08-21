@@ -1,5 +1,6 @@
 package com.mustapha.backend.project;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.mustapha.backend.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -7,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+import org.springframework.lang.Nullable;
 
 import java.util.List;
 
@@ -30,6 +32,7 @@ public class Project {
     private String description;
 
     @ManyToMany
+    @JsonIgnore
     @JoinTable(
             name = "project_developers",
             joinColumns = @JoinColumn(name = "project_id"),
@@ -37,7 +40,6 @@ public class Project {
     )
     private List<User> developers;
 
-    @ManyToOne
-    @JoinColumn(name = "consultant_id", nullable = false)
-    private User securityConsultant;
+    @Nullable
+    private Integer securityConsultant_id;
 }

@@ -20,8 +20,8 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<User> createUser(@RequestBody User user) {
-        User createdUser = userService.createUser(user);
+    public ResponseEntity<User> createUser(@RequestParam String firstname,@RequestParam String lastname,@RequestParam String email,@RequestParam String password,@RequestParam String role) {
+        User createdUser = userService.createUser(firstname, lastname, email, password, role);
         return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
     }
 
@@ -29,7 +29,7 @@ public class UserController {
     public ResponseEntity<User> getUserById(@PathVariable Integer id) {
         Optional<User> user = userService.getUserById(id);
         return user.map(ResponseEntity::ok)
-                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @GetMapping
@@ -38,14 +38,12 @@ public class UserController {
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable Integer id, @RequestBody User user) {
-        try {
-            User updatedUser = userService.updateUser(id, user);
+    @PutMapping("/update")
+    public ResponseEntity<User> updateUser(@RequestParam Integer id,@RequestParam String firstname,@RequestParam String lastname,@RequestParam String email,@RequestParam String password,@RequestParam String role) {
+
+            User updatedUser = userService.updateUser(id, firstname, lastname, email, password, role);
             return new ResponseEntity<>(updatedUser, HttpStatus.OK);
-        } catch (RuntimeException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+
     }
 
     @DeleteMapping("/{id}")
@@ -56,8 +54,10 @@ public class UserController {
 
     @GetMapping("/email")
     public ResponseEntity<User> getUserByEmail(@RequestParam String email) {
+        System.out.println("ddddddddddddddddddddddddddddddddddddd");
         Optional<User> user = userService.getUserByEmail(email);
         return user.map(ResponseEntity::ok)
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
+
 }

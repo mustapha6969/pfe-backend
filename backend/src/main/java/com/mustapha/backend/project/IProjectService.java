@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface IProjectService {
-    Project createProject(Project project);
+    Project createProject(String name,String description,String consultant);
 
     Optional<Project> getProjectById(Integer id);
 

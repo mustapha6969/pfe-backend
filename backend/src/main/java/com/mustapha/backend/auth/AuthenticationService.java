@@ -2,7 +2,7 @@ package com.mustapha.backend.auth;
 
 import com.mustapha.backend.email.EmailService;
 import com.mustapha.backend.email.EmailTemplateName;
-import com.mustapha.backend.role.RoleRepository;
+import com.mustapha.backend.role.Role;
 import com.mustapha.backend.security.JwtService;
 import com.mustapha.backend.user.Token;
 import com.mustapha.backend.user.TokenRepository;
@@ -16,7 +16,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
@@ -31,7 +30,6 @@ public class AuthenticationService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
-    private final RoleRepository roleRepository;
     private final EmailService emailService;
     private final TokenRepository tokenRepository;
 
@@ -39,9 +37,7 @@ public class AuthenticationService {
     private String activationUrl;
 
     public void register(RegistrationRequest request) throws MessagingException {
-        var userRole = roleRepository.findByName("USER")
-                // todo - better exception handling
-                .orElseThrow(() -> new IllegalStateException("ROLE USER was not initiated"));
+
         var user = User.builder()
                 .firstname(request.getFirstname())
                 .lastname(request.getLastname())
@@ -49,7 +45,7 @@ public class AuthenticationService {
                 .password(passwordEncoder.encode(request.getPassword()))
                 .accountLocked(false)
                 .enabled(false)
-                .roles(List.of(userRole))
+                .role(Role.ADMIN)
                 .build();
         userRepository.save(user);
         sendValidationEmail(user);

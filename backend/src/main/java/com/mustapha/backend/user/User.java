@@ -1,5 +1,6 @@
 package com.mustapha.backend.user;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.mustapha.backend.form.Form;
 import com.mustapha.backend.project.Project;
 import com.mustapha.backend.repport.Repport;
@@ -48,17 +49,21 @@ public class User implements UserDetails, Principal {
     private String password;
     private boolean accountLocked;
     private boolean enabled;
-    @ManyToMany(fetch = EAGER)
-    private List<Role> roles;
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
-    @OneToMany(mappedBy = "developer", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "developer", cascade = CascadeType.PERSIST, orphanRemoval = false)
     private List<Form> forms;
 
-    @ManyToMany(mappedBy = "developers")
+    @ManyToMany(mappedBy = "developers", cascade = CascadeType.PERSIST)
     private List<Project> projects;
 
-    @OneToMany(mappedBy = "securityConsultant", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "securityConsultant", cascade = CascadeType.PERSIST, orphanRemoval = false)
     private List<Repport> reports;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Token> tokens;
 
     @CreatedDate
     @Column(nullable = false, updatable = false)
@@ -68,12 +73,17 @@ public class User implements UserDetails, Principal {
     @Column(insertable = false)
     private LocalDateTime lastModifiedDate;
 
-    @Override
+   /* @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return this.roles
                 .stream()
                 .map(r -> new SimpleGrantedAuthority(r.getName()))
                 .collect(Collectors.toList());
+    }*/
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of();
     }
 
     @Override

@@ -20,8 +20,8 @@ public class ProjectController {
     }
 
     @PostMapping
-    public ResponseEntity<Project> createProject(@RequestBody Project project) {
-        Project createdProject = projectService.createProject(project);
+    public ResponseEntity<Project> createProject(@RequestParam String name,@RequestParam String description, @RequestParam String consultant) {
+        Project createdProject = projectService.createProject(name,description,consultant);
         return new ResponseEntity<>(createdProject, HttpStatus.CREATED);
     }
 
@@ -34,6 +34,7 @@ public class ProjectController {
 
     @GetMapping
     public ResponseEntity<List<Project>> getAllProjects() {
+        System.out.println("here");
         List<Project> projects = projectService.getAllProjects();
         return new ResponseEntity<>(projects, HttpStatus.OK);
     }
