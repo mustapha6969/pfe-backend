@@ -10,7 +10,7 @@ public interface IUserService {
 
     List<User> getAllUsers();
 
-    User updateUser(Integer id,String firstName, String lastName, String email, String password,String role);
+    User updateUser(Integer id,String firstName, String lastName, String email,String role);
 
     void deleteUser(Integer id);
 

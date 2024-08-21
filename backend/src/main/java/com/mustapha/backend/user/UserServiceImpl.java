@@ -10,7 +10,6 @@ import com.mustapha.backend.role.Role;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,13 +33,18 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     public User createUser(String firstname, String lastname, String email, String password, String role) {
-        List<Role> roles = new ArrayList<>();
+        Role userRole;
+        try {
+            userRole = Role.valueOf(role.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException("Invalid role: " + role);
+        }
         User user = new User();
         user.setFirstname(firstname);
         user.setLastname(lastname);
         user.setEmail(email);
         user.setPassword(password);
-        //user.setRoles(roles);
+        user.setRole(userRole);
         return userRepository.save(user);
     }
 
@@ -55,14 +59,18 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public User updateUser(Integer id,String firstname, String lastname, String email, String password, String role) {
-        List<Role> roles =new ArrayList<>();
+    public User updateUser(Integer id,String firstname, String lastname, String email, String role) {
+        Role userRole;
+        try {
+            userRole = Role.valueOf(role.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException("Invalid role: " + role);
+        }
         return userRepository.findById(id).map(user -> {
             user.setFirstname(firstname);
             user.setLastname(lastname);
             user.setEmail(email);
-            user.setPassword(password);
-           // user.setRoles(roles);
+           user.setRole(userRole);
             return userRepository.save(user);
         }).orElseThrow(() -> new RuntimeException("User not found with id " + id));
 
