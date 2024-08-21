@@ -10,7 +10,7 @@ public interface IProjectService {
 
     List<Project> getAllProjects();
 
-    Project updateProject(Integer id, Project project);
+    Project updateProject(Integer id, ProjectUpdateRequest updatedProject);
 
     void deleteProject(Integer id);
 }
